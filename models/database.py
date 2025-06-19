@@ -1,21 +1,13 @@
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 import os
 
-
 load_dotenv()
 
-# Используем асинхронный драйвер
-DATABASE_URL = os.getenv("DATABASE_URL").replace("postgresql://", "postgresql+asyncpg://")
-engine = create_async_engine(DATABASE_URL, echo=True)
+# Используем синхронный драйвер
+DATABASE_URL = os.getenv("DATABASE_URL").replace("+asyncpg", "")
+engine = create_engine(DATABASE_URL, echo=True)
 
-AsyncSessionLocal = sessionmaker(
-    bind=engine,
-    class_=AsyncSession,
-    expire_on_commit=False
-)
-
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
-
-
